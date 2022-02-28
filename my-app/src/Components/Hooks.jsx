@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useRef } from 'react'
 
 export const useOnDraw = (onDrarw) => {
@@ -5,13 +6,26 @@ export const useOnDraw = (onDrarw) => {
   
   const isDrawingRef = useRef(false);
   
-  const initMouseMoveRef = useRef(null);
-  const initMouseDownRef = useRef(null);
-  const initMouseUpRef = useRef(null);
+  const mouseMoveRef = useRef(null);
+  const mouseDownRef = useRef(null);
+  const mouseUpRef = useRef(null);
+
+  useEffect(()=>{
+    return () =>{
+      if(mouseMoveRef.current) {
+        window.removeEventListener("mousemove",mouseMoveRef.current)
+      }
+      if(mouseUpRef.current) {
+        window.removeEventListener("mouseup",mouseUpRef.current)
+      }
+    }
+  },[])
   
   const setCanvasRef = (ref) =>{
     if(!ref) return;
-    canvasRef.current.removeEventListener("mousedown", mouseDownListener.current)
+    if(canvasRef.current){
+      canvasRef.current.removeEventListener("mousedown", mouseDownRef.current)
+    }
     canvasRef.current = ref;
     initMouseMove();
     initMouseDownListener();
@@ -28,7 +42,7 @@ export const useOnDraw = (onDrarw) => {
         console.log(point);
         }   
       }
-      mouseMoveLilstener.current = mouseMoveLilstener;
+      mouseMoveRef.current = mouseMoveLilstener;
     window.addEventListener("mousemove", mouseMoveLilstener)
   };
 
@@ -47,7 +61,7 @@ export const useOnDraw = (onDrarw) => {
       const listener = () =>{
         isDrawingRef.current = true;
       }
-      initMouseDownRef.current = listener;
+      mouseDownRef.current = listener;
       canvasRef.current.addEventListener ("mousedown", listener);
     }
   };
